@@ -483,22 +483,22 @@ exports.MangaDex = void 0;
 const paperback_extensions_common_1 = require("paperback-extensions-common");
 class MangaDex extends paperback_extensions_common_1.Source {
     get version() {
-        return '1.1.0';
+        return '2.0.70';
     }
     get name() {
-        return 'SafeDex';
+        return 'MangaDex Unlocked';
     }
     get icon() {
         return 'icon.png';
     }
     get author() {
-        return 'Faizan Durrani';
+        return 'Neko';
     }
     get authorWebsite() {
-        return 'https://github.com/FaizanDurrani';
+        return 'https://github.com/Pogogo007';
     }
     get description() {
-        return 'The default source for Papaerback, supports notifications';
+        return 'Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching. Has No Filter and loads much faster than regular source.';
     }
     get hentaiSource() {
         return false;
@@ -534,6 +534,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
                 },
                 data: JSON.stringify({
                     id: ids.map(x => parseInt(x)),
+                    bypassFilter: true
                 }),
             }),
         ];
@@ -776,6 +777,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
             method: 'POST',
             data: JSON.stringify({
                 title: query.title,
+                bypassFilter: true
             }),
             headers: {
                 'content-type': 'application/json',
