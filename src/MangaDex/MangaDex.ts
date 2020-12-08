@@ -17,11 +17,11 @@ import {
 
 export class MangaDex extends Source {
   get version(): string {
-    return '1.1.0'
+    return '2.0.70'
   }
 
   get name(): string {
-    return 'SafeDex'
+    return 'MangaDex Unlocked'
   }
 
   get icon(): string {
@@ -29,15 +29,15 @@ export class MangaDex extends Source {
   }
 
   get author(): string {
-    return 'Faizan Durrani'
+    return 'Neko'
   }
 
   get authorWebsite(): string {
-    return 'https://github.com/FaizanDurrani'
+    return 'https://github.com/Pogogo007'
   }
 
   get description(): string {
-    return 'The default source for Papaerback, supports notifications'
+    return 'Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching. Has No Filter and loads much faster than regular source.'
   }
 
   get hentaiSource(): boolean {
@@ -79,6 +79,7 @@ export class MangaDex extends Source {
         },
         data: JSON.stringify({
           id: ids.map(x => parseInt(x)),
+          bypassFilter: true
         }),
       }),
     ]
@@ -378,6 +379,7 @@ export class MangaDex extends Source {
       method: 'POST',
       data: JSON.stringify({
         title: query.title,
+        bypassFilter: true
       }),
       headers: {
         'content-type': 'application/json',
