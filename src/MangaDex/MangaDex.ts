@@ -13,82 +13,82 @@ import {
   MangaUpdates,
   SourceTag,
   TagType,
-} from 'paperback-extensions-common'
+} from "paperback-extensions-common";
 
 export class MangaDex extends Source {
   get version(): string {
-    return '2.0.70'
+    return "2.0.70";
   }
 
   get name(): string {
-    return 'MangaDex Unlocked'
+    return "MangaDex Unlocked";
   }
 
   get icon(): string {
-    return 'icon.png'
+    return "icon.png";
   }
 
   get author(): string {
-    return 'Neko'
+    return "Neko";
   }
 
   get authorWebsite(): string {
-    return 'https://github.com/Pogogo007'
+    return "https://github.com/Pogogo007";
   }
 
   get description(): string {
-    return 'Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching. Has No Filter and loads much faster than regular source.'
+    return "Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching. Has No Filter and loads much faster than regular source.";
   }
 
   get hentaiSource(): boolean {
-    return false
+    return false;
   }
 
   get websiteBaseURL(): string {
-    return 'https://mangadex.org'
+    return "https://mangadex.org";
   }
 
   get sourceTags(): SourceTag[] {
     return [
       {
-        text: 'Recommended',
+        text: "Recommended",
         type: TagType.BLUE,
       },
-    ]
+    ];
   }
 
   get rateLimit(): number {
-    return 1
+    return 1;
   }
 
   get sectionKeys() {
     return {
-      shounen: 'shounen',
-      recentlyUpdated: 'recentlyUpdated',
-    }
+      shounen: "shounen",
+      recentlyUpdated: "recentlyUpdated",
+    };
   }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     return [
       createRequestObject({
-        metadata: {ids},
+        metadata: { ids },
         url: CACHE_MANGA,
-        method: 'POST',
+        method: "POST",
         headers: {
-          'content-type': 'application/json',
+          "content-type": "application/json",
         },
         data: JSON.stringify({
-          id: ids.map(x => parseInt(x)),
-          bypassFilter: true
+          id: ids.map((x) => parseInt(x)),
+          bypassFilter: true,
         }),
       }),
-    ]
+    ];
   }
 
   getMangaDetails(data: any, _metadata: any): Manga[] {
-    const result = JSON.parse(data)
+    const result = JSON.parse(data);
 
-    const mangas = []
+    const mangas = [];
     for (const mangaDetails of result.result) {
       mangas.push(
         createManga({
@@ -96,7 +96,7 @@ export class MangaDex extends Source {
           titles: mangaDetails.titles,
           image:
             mangaDetails.image ??
-            'https://mangadex.org/images/avatars/default1.jpg',
+            "https://mangadex.org/images/avatars/default1.jpg",
           rating: mangaDetails.rating,
           status: mangaDetails.status,
           langFlag: mangaDetails.langFlag,
@@ -109,38 +109,38 @@ export class MangaDex extends Source {
           follows: mangaDetails.follows,
           tags: [
             createTagSection({
-              id: 'content',
-              label: 'Content',
+              id: "content",
+              label: "Content",
               tags: mangaDetails.content.map((x: any) =>
-                createTag({id: x.id.toString(), label: x.value}),
+                createTag({ id: x.id.toString(), label: x.value })
               ),
             }),
             createTagSection({
-              id: 'demographic',
-              label: 'Demographic',
+              id: "demographic",
+              label: "Demographic",
               tags: mangaDetails.demographic.map((x: any) =>
-                createTag({id: x.id.toString(), label: x.value}),
+                createTag({ id: x.id.toString(), label: x.value })
               ),
             }),
             createTagSection({
-              id: 'format',
-              label: 'Format',
+              id: "format",
+              label: "Format",
               tags: mangaDetails.format.map((x: any) =>
-                createTag({id: x.id.toString(), label: x.value}),
+                createTag({ id: x.id.toString(), label: x.value })
               ),
             }),
             createTagSection({
-              id: 'genre',
-              label: 'Genre',
+              id: "genre",
+              label: "Genre",
               tags: mangaDetails.genre.map((x: any) =>
-                createTag({id: x.id.toString(), label: x.value}),
+                createTag({ id: x.id.toString(), label: x.value })
               ),
             }),
             createTagSection({
-              id: 'theme',
-              label: 'Theme',
+              id: "theme",
+              label: "Theme",
               tags: mangaDetails.theme.map((x: any) =>
-                createTag({id: x.id.toString(), label: x.value}),
+                createTag({ id: x.id.toString(), label: x.value })
               ),
             }),
           ],
@@ -149,28 +149,28 @@ export class MangaDex extends Source {
           hentai: mangaDetails.hentai,
           relatedIds: mangaDetails.relatedIds,
           lastUpdate: mangaDetails.lastUpdate,
-        }),
-      )
+        })
+      );
     }
 
-    return mangas
+    return mangas;
   }
 
   getChaptersRequest(mangaId: string): Request {
-    const metadata = {mangaId}
+    const metadata = { mangaId };
     return createRequestObject({
       metadata,
       url: `${MD_MANGA_API}/${mangaId}`,
-      method: 'GET',
-    })
+      method: "GET",
+    });
   }
 
   getChapters(data: any, metadata: any): Chapter[] {
-    const chapters = JSON.parse(data).chapter as any
+    const chapters = JSON.parse(data).chapter as any;
 
-    return Object.keys(chapters).map(id => {
-      const chapter = chapters[id]
-      const volume = Number(chapter.volume)
+    return Object.keys(chapters).map((id) => {
+      const chapter = chapters[id];
+      const volume = Number(chapter.volume);
       return createChapter({
         id: id,
         chapNum: Number(chapter.chapter),
@@ -180,114 +180,120 @@ export class MangaDex extends Source {
         group: chapter.group_name,
         name: chapter.title,
         time: new Date(Number(chapter.timestamp) * 1000),
-      })
-    })
+      });
+    });
   }
 
   getChapterDetailsRequest(_mangaId: string, chapId: string): Request {
     return createRequestObject({
       url: `${MD_CHAPTER_API}/${chapId}?mark_read=0`,
-      method: 'GET',
+      method: "GET",
       incognito: false,
-    })
+    });
   }
 
   getChapterDetails(data: any, _metadata: any): ChapterDetails {
-    const chapterDetails = JSON.parse(data) as any
+    const chapterDetails = JSON.parse(data) as any;
 
     return createChapterDetails({
       id: chapterDetails.id.toString(),
       longStrip: parseInt(chapterDetails.long_strip) === 1,
       mangaId: chapterDetails.manga_id.toString(),
       pages: chapterDetails.page_array.map(
-        (x: string) =>
-          `${chapterDetails.server}${chapterDetails.hash}/${x}`,
+        (x: string) => `${chapterDetails.server}${chapterDetails.hash}/${x}`
       ),
-    })
+    });
   }
 
   constructFilterUpdatedMangaRequest(ids: string[], time: Date, page: number) {
-    const metadata = {ids: ids, referenceTime: time, page: page}
+    const metadata = { ids: ids, referenceTime: time, page: page };
 
-    console.log(`time ${time}, idCount: ${ids.length}`)
+    console.log(`time ${time}, idCount: ${ids.length}`);
 
     return createRequestObject({
       metadata: metadata,
-      url: 'https://mangadex.org/titles/0/' + page.toString(),
-      method: 'GET',
+      url: "https://mangadex.org/titles/0/" + page.toString(),
+      method: "GET",
       incognito: true,
       cookies: [
         createCookie({
-          name: 'mangadex_title_mode',
-          value: '2',
+          name: "mangadex_title_mode",
+          value: "2",
           domain: MD_DOMAIN,
         }),
       ],
-    })
+    });
   }
 
   filterUpdatedMangaRequest(ids: string[], time: Date): Request | null {
-    return this.constructFilterUpdatedMangaRequest(ids, time, 1)
+    return this.constructFilterUpdatedMangaRequest(ids, time, 1);
   }
 
   filterUpdatedManga(data: any, metadata: any): MangaUpdates {
-    const $ = this.cheerio.load(data)
+    const $ = this.cheerio.load(data);
 
-    console.log(`REFERENCE TIME: ${metadata.referenceTime}`)
+    console.log(`REFERENCE TIME: ${metadata.referenceTime}`);
 
     const returnObject: MangaUpdates = {
       ids: [],
       nextPage: this.constructFilterUpdatedMangaRequest(
         metadata.ids,
         metadata.referenceTime,
-        metadata.page + 1,
+        metadata.page + 1
       ),
-    }
+    };
 
-    for (const elem of $('.manga-entry').toArray()) {
-      const id = elem.attribs['data-id']
+    for (const elem of $(".manga-entry").toArray()) {
+      const id = elem.attribs["data-id"];
       const mangaDate = new Date(
-        ($(elem).find('time').attr('datetime') ?? '').replace(/-/g, '/'),
-      )
-      console.log(`${id} updated at ${mangaDate}}`)
+        ($(elem).find("time").attr("datetime") ?? "").replace(/-/g, "/")
+      );
+      console.log(`${id} updated at ${mangaDate}}`);
       if (mangaDate >= metadata.referenceTime) {
         if (metadata.ids.includes(id)) {
-          console.log(`${id} marked as an update`)
-          returnObject.ids.push(id)
+          console.log(`${id} marked as an update`);
+          returnObject.ids.push(id);
         }
       } else {
-        returnObject.nextPage = undefined
-        return createMangaUpdates(returnObject)
+        returnObject.nextPage = undefined;
+        return createMangaUpdates(returnObject);
       }
     }
 
-    console.log(`Found ${returnObject.ids.length} updates`)
-    return createMangaUpdates(returnObject)
+    console.log(`Found ${returnObject.ids.length} updates`);
+    return createMangaUpdates(returnObject);
   }
 
   getHomePageSectionRequest(): HomeSectionRequest[] {
-    console.log(JSON.stringify(this))
-    const request1 = this.constructSearchRequest({
-      includeDemographic: ['1'],
-    }, 1, 10)
+    console.log(JSON.stringify(this));
+    const request1 = this.constructSearchRequest(
+      {
+        includeDemographic: ["1"],
+      },
+      1,
+      10
+    );
 
     const request2 = createRequestObject({
-      url: CACHE_DOMAIN + '/updates?limit=10',
-      method: 'GET',
+      url: CACHE_DOMAIN + "/updates?limit=10",
+      method: "GET",
       incognito: true,
-    })
+    });
 
     const section1 = createHomeSection({
       id: this.sectionKeys.shounen,
-      title: 'UPDATED SHOUNENS',
+      title: "UPDATED SHOUNENS",
       view_more: this.constructGetViewMoreRequest(this.sectionKeys.shounen, 1),
-    })
+    });
 
     const section3 = createHomeSection({
       id: this.sectionKeys.recentlyUpdated,
-      title: 'RECENTLY UPDATED TITLES',
-      view_more: this.constructGetViewMoreRequest(this.sectionKeys.recentlyUpdated, 1),
-    })
+      title: "RECENTLY UPDATED TITLES",
+      view_more: this.constructGetViewMoreRequest(
+        this.sectionKeys.recentlyUpdated,
+        1
+      ),
+    });
 
     return [
       createHomeSectionRequest({
@@ -298,156 +304,159 @@ export class MangaDex extends Source {
         request: request2,
         sections: [section3],
       }),
-    ]
+    ];
   }
 
   getHomePageSections(data: any, sections: HomeSection[]): HomeSection[] {
-    return sections.map(section => {
+    return sections.map((section) => {
       switch (section.id) {
-      case this.sectionKeys.shounen:
-        section.items = this.parseRecentlyUpdatedMangaSectionTiles(data)
-        break
-      case this.sectionKeys.recentlyUpdated:
-        section.items = this.parseRecentlyUpdatedMangaSectionTiles(data)
-        break
+        case this.sectionKeys.shounen:
+          section.items = this.parseRecentlyUpdatedMangaSectionTiles(data);
+          break;
+        case this.sectionKeys.recentlyUpdated:
+          section.items = this.parseRecentlyUpdatedMangaSectionTiles(data);
+          break;
       }
 
-      return section
-    })
+      return section;
+    });
   }
 
   constructGetViewMoreRequest(key: string, page: number) {
     switch (key) {
-    case this.sectionKeys.shounen:
-      return this.constructSearchRequest({
-        includeDemographic: ['1'],
-      }, page)
+      case this.sectionKeys.shounen:
+        return this.constructSearchRequest(
+          {
+            includeDemographic: ["1"],
+          },
+          page
+        );
 
-    case this.sectionKeys.recentlyUpdated:
-      return createRequestObject({
-        url: `${CACHE_DOMAIN}/updates?page=${page}`,
-        method: 'GET',
-        metadata: {
-          key,
-          page,
-        },
-      })
+      case this.sectionKeys.recentlyUpdated:
+        return createRequestObject({
+          url: `${CACHE_DOMAIN}/updates?page=${page}`,
+          method: "GET",
+          metadata: {
+            key,
+            page,
+          },
+        });
     }
   }
 
   getViewMoreItems(data: string, key: string, metadata: any): PagedResults {
-    const updates = this.parseRecentlyUpdatedMangaSectionTiles(data)
+    const updates = this.parseRecentlyUpdatedMangaSectionTiles(data);
 
     return createPagedResults({
       results: updates,
       nextPage:
-        updates.length > 0 ?
-          this.constructGetViewMoreRequest(key, metadata.page + 1) :
-          undefined,
-    })
+        updates.length > 0
+          ? this.constructGetViewMoreRequest(key, metadata.page + 1)
+          : undefined,
+    });
   }
 
   parseRecentlyUpdatedMangaSectionTiles(data: any): MangaTile[] {
-    const updates: MangaTile[] = []
-    const result = JSON.parse(data).result
+    const updates: MangaTile[] = [];
+    const result = JSON.parse(data).result;
 
     for (const manga of result) {
-      console.log(manga.lastUpdate)
+      console.log(manga.lastUpdate);
       updates.push(
         createMangaTile({
           id: manga.id.toString(),
           image: manga.image,
           title: createIconText({
-            text: manga.titles[0] ?? 'UNKNOWN',
+            text: manga.titles[0] ?? "UNKNOWN",
           }),
           subtitleText: createIconText({
-            icon: 'clock.fill',
+            icon: "clock.fill",
             text: this.timeDifference(
               new Date().getTime(),
-              new Date(manga.lastUpdate).getTime(),
+              new Date(manga.lastUpdate).getTime()
             ),
           }),
-        }),
-      )
+        })
+      );
     }
-    return updates
+    return updates;
   }
 
   constructSearchRequest(query: SearchRequest, page: number, items = 50) {
     return createRequestObject({
       url: CACHE_SEARCH + `?page=${page}&items=${items}`,
-      method: 'POST',
+      method: "POST",
       data: JSON.stringify({
         title: query.title,
-        bypassFilter: true
+        bypassFilter: true,
       }),
       headers: {
-        'content-type': 'application/json',
+        "content-type": "application/json",
       },
       metadata: {
         page: page,
         query: query,
       },
-    })
+    });
   }
 
   searchRequest(query: SearchRequest): Request | null {
-    return this.constructSearchRequest(query, 1)
+    return this.constructSearchRequest(query, 1);
   }
 
   search(data: any, metadata: any): PagedResults | null {
-    const result = JSON.parse(data)
+    const result = JSON.parse(data);
 
-    const mangas = []
+    const mangas = [];
     for (const mangaDetails of result.result) {
       mangas.push(
         createMangaTile({
           id: mangaDetails.id.toString(),
           image: mangaDetails.image,
           title: createIconText({
-            text: mangaDetails.titles[0] ?? 'UNKNOWN',
+            text: mangaDetails.titles[0] ?? "UNKNOWN",
           }),
-        }),
-      )
+        })
+      );
     }
 
     return createPagedResults({
       results: mangas,
       nextPage:
-        mangas.length > 0 ?
-          this.constructSearchRequest(metadata.query, metadata.page + 1) :
-          undefined,
-    })
+        mangas.length > 0
+          ? this.constructSearchRequest(metadata.query, metadata.page + 1)
+          : undefined,
+    });
   }
 
   getMangaShareUrl(mangaId: string) {
-    return `${MD_DOMAIN}/manga/${mangaId}`
+    return `${MD_DOMAIN}/manga/${mangaId}`;
   }
 
   timeDifference(current: number, previous: number) {
-    const msPerMinute = 60 * 1000
-    const msPerHour = msPerMinute * 60
-    const msPerDay = msPerHour * 24
-    const msPerMonth = msPerDay * 30
-    const msPerYear = msPerDay * 365
+    const msPerMinute = 60 * 1000;
+    const msPerHour = msPerMinute * 60;
+    const msPerDay = msPerHour * 24;
+    const msPerMonth = msPerDay * 30;
+    const msPerYear = msPerDay * 365;
 
-    const elapsed = current - previous
+    const elapsed = current - previous;
 
     if (elapsed < msPerMinute) {
-      return Math.round(elapsed / 1000) + ' sec ago'
+      return Math.round(elapsed / 1000) + " sec ago";
     }
     if (elapsed < msPerHour) {
-      return Math.round(elapsed / msPerMinute) + ' min ago'
+      return Math.round(elapsed / msPerMinute) + " min ago";
     }
     if (elapsed < msPerDay) {
-      return Math.round(elapsed / msPerHour) + ' hrs ago'
+      return Math.round(elapsed / msPerHour) + " hrs ago";
     }
     if (elapsed < msPerMonth) {
-      return Math.round(elapsed / msPerDay) + ' days ago'
+      return Math.round(elapsed / msPerDay) + " days ago";
     }
     if (elapsed < msPerYear) {
-      return Math.round(elapsed / msPerMonth) + ' months ago'
+      return Math.round(elapsed / msPerMonth) + " months ago";
     }
-    return Math.round(elapsed / msPerYear) + ' years ago'
+    return Math.round(elapsed / msPerYear) + " years ago";
   }
 }
