@@ -395,6 +395,9 @@ export class MangaDex extends Source {
       headers: {
         'content-type': 'application/json',
       },
+      metadata: {
+        page, items, query
+      }
     })
   }
 
