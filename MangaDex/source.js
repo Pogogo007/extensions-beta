@@ -483,7 +483,7 @@ exports.MangaDex = void 0;
 const paperback_extensions_common_1 = require("paperback-extensions-common");
 class MangaDex extends paperback_extensions_common_1.Source {
     get version() {
-        return '2.0.71';
+        return '2.0.72';
     }
     get name() {
         return 'MangaDex Unlocked';
@@ -794,6 +794,9 @@ class MangaDex extends paperback_extensions_common_1.Source {
             headers: {
                 'content-type': 'application/json',
             },
+            metadata: {
+                page, items, query
+            }
         });
     }
     searchRequest(query) {
