@@ -483,7 +483,7 @@ exports.MangaDex = void 0;
 const paperback_extensions_common_1 = require("paperback-extensions-common");
 class MangaDex extends paperback_extensions_common_1.Source {
     get version() {
-        return '2.0.72';
+        return '2.0.73';
     }
     get name() {
         return 'MangaDex Unlocked';
@@ -689,7 +689,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
         const request2 = this.constructSearchRequest({
             includeGenre: ['2'],
         }, 1, 10);
-        const section1 = createHomeSection({
+        const section2 = createHomeSection({
             id: this.sectionKeys.shounen,
             title: 'UPDATED SHOUNEN TITLES',
             view_more: this.constructGetViewMoreRequest(this.sectionKeys.shounen, 1),
@@ -697,6 +697,11 @@ class MangaDex extends paperback_extensions_common_1.Source {
         const section3 = createHomeSection({
             id: this.sectionKeys.recentlyUpdated,
             title: 'UPDATED ACTION TITLES',
+            view_more: this.constructGetViewMoreRequest(this.sectionKeys.recentlyUpdated, 1),
+        });
+        const section1 = createHomeSection({
+            id: this.sectionKeys.recentlyUpdated,
+            title: "RECENTLY UPDATED TITLES",
             view_more: this.constructGetViewMoreRequest(this.sectionKeys.recentlyUpdated, 1),
         });
         return [
