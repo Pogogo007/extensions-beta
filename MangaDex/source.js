@@ -483,33 +483,33 @@ exports.MangaDex = void 0;
 const paperback_extensions_common_1 = require("paperback-extensions-common");
 class MangaDex extends paperback_extensions_common_1.Source {
     get version() {
-        return "2.0.70";
+        return '2.0.71';
     }
     get name() {
-        return "MangaDex Unlocked";
+        return 'MangaDex Unlocked';
     }
     get icon() {
-        return "icon.png";
+        return 'icon.png';
     }
     get author() {
-        return "Neko";
+        return 'Neko';
     }
     get authorWebsite() {
-        return "https://github.com/Pogogo007";
+        return 'https://github.com/Pogogo007';
     }
     get description() {
-        return "Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching. Has No Filter and loads much faster than regular source.";
+        return 'Full MangaDex Experience With Nothing Filtered';
     }
     get hentaiSource() {
         return false;
     }
     get websiteBaseURL() {
-        return "https://mangadex.org";
+        return 'https://mangadex.org';
     }
     get sourceTags() {
         return [
             {
-                text: "Recommended",
+                text: 'Recommended',
                 type: paperback_extensions_common_1.TagType.BLUE,
             },
         ];
@@ -519,8 +519,8 @@ class MangaDex extends paperback_extensions_common_1.Source {
     }
     get sectionKeys() {
         return {
-            shounen: "shounen",
-            recentlyUpdated: "recentlyUpdated",
+            shounen: 'shounen',
+            recentlyUpdated: 'recentlyUpdated',
         };
     }
     getMangaDetailsRequest(ids) {
@@ -528,12 +528,12 @@ class MangaDex extends paperback_extensions_common_1.Source {
             createRequestObject({
                 metadata: { ids },
                 url: CACHE_MANGA,
-                method: "POST",
+                method: 'POST',
                 headers: {
-                    "content-type": "application/json",
+                    'content-type': 'application/json',
                 },
                 data: JSON.stringify({
-                    id: ids.map((x) => parseInt(x)),
+                    id: ids.map(x => parseInt(x)),
                     bypassFilter: true,
                 }),
             }),
@@ -547,7 +547,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
             mangas.push(createManga({
                 id: mangaDetails.id.toString(),
                 titles: mangaDetails.titles,
-                image: (_a = mangaDetails.image) !== null && _a !== void 0 ? _a : "https://mangadex.org/images/avatars/default1.jpg",
+                image: (_a = mangaDetails.image) !== null && _a !== void 0 ? _a : 'https://mangadex.org/images/avatars/default1.jpg',
                 rating: mangaDetails.rating,
                 status: mangaDetails.status,
                 langFlag: mangaDetails.langFlag,
@@ -560,28 +560,28 @@ class MangaDex extends paperback_extensions_common_1.Source {
                 follows: mangaDetails.follows,
                 tags: [
                     createTagSection({
-                        id: "content",
-                        label: "Content",
+                        id: 'content',
+                        label: 'Content',
                         tags: mangaDetails.content.map((x) => createTag({ id: x.id.toString(), label: x.value })),
                     }),
                     createTagSection({
-                        id: "demographic",
-                        label: "Demographic",
+                        id: 'demographic',
+                        label: 'Demographic',
                         tags: mangaDetails.demographic.map((x) => createTag({ id: x.id.toString(), label: x.value })),
                     }),
                     createTagSection({
-                        id: "format",
-                        label: "Format",
+                        id: 'format',
+                        label: 'Format',
                         tags: mangaDetails.format.map((x) => createTag({ id: x.id.toString(), label: x.value })),
                     }),
                     createTagSection({
-                        id: "genre",
-                        label: "Genre",
+                        id: 'genre',
+                        label: 'Genre',
                         tags: mangaDetails.genre.map((x) => createTag({ id: x.id.toString(), label: x.value })),
                     }),
                     createTagSection({
-                        id: "theme",
-                        label: "Theme",
+                        id: 'theme',
+                        label: 'Theme',
                         tags: mangaDetails.theme.map((x) => createTag({ id: x.id.toString(), label: x.value })),
                     }),
                 ],
@@ -599,12 +599,12 @@ class MangaDex extends paperback_extensions_common_1.Source {
         return createRequestObject({
             metadata,
             url: `${MD_MANGA_API}/${mangaId}`,
-            method: "GET",
+            method: 'GET',
         });
     }
     getChapters(data, metadata) {
         const chapters = JSON.parse(data).chapter;
-        return Object.keys(chapters).map((id) => {
+        return Object.keys(chapters).map(id => {
             const chapter = chapters[id];
             const volume = Number(chapter.volume);
             return createChapter({
@@ -622,7 +622,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
     getChapterDetailsRequest(_mangaId, chapId) {
         return createRequestObject({
             url: `${MD_CHAPTER_API}/${chapId}?mark_read=0`,
-            method: "GET",
+            method: 'GET',
             incognito: false,
         });
     }
@@ -640,13 +640,13 @@ class MangaDex extends paperback_extensions_common_1.Source {
         console.log(`time ${time}, idCount: ${ids.length}`);
         return createRequestObject({
             metadata: metadata,
-            url: "https://mangadex.org/titles/0/" + page.toString(),
-            method: "GET",
+            url: 'https://mangadex.org/titles/0/' + page.toString(),
+            method: 'GET',
             incognito: true,
             cookies: [
                 createCookie({
-                    name: "mangadex_title_mode",
-                    value: "2",
+                    name: 'mangadex_title_mode',
+                    value: '2',
                     domain: MD_DOMAIN,
                 }),
             ],
@@ -663,9 +663,9 @@ class MangaDex extends paperback_extensions_common_1.Source {
             ids: [],
             nextPage: this.constructFilterUpdatedMangaRequest(metadata.ids, metadata.referenceTime, metadata.page + 1),
         };
-        for (const elem of $(".manga-entry").toArray()) {
-            const id = elem.attribs["data-id"];
-            const mangaDate = new Date(((_a = $(elem).find("time").attr("datetime")) !== null && _a !== void 0 ? _a : "").replace(/-/g, "/"));
+        for (const elem of $('.manga-entry').toArray()) {
+            const id = elem.attribs['data-id'];
+            const mangaDate = new Date(((_a = $(elem).find('time').attr('datetime')) !== null && _a !== void 0 ? _a : '').replace(/-/g, '/'));
             console.log(`${id} updated at ${mangaDate}}`);
             if (mangaDate >= metadata.referenceTime) {
                 if (metadata.ids.includes(id)) {
@@ -684,21 +684,19 @@ class MangaDex extends paperback_extensions_common_1.Source {
     getHomePageSectionRequest() {
         console.log(JSON.stringify(this));
         const request1 = this.constructSearchRequest({
-            includeDemographic: ["1"],
+            includeDemographic: ['1'],
         }, 1, 10);
-        const request2 = createRequestObject({
-            url: CACHE_DOMAIN + "/updates?limit=10",
-            method: "GET",
-            incognito: true,
-        });
+        const request2 = this.constructSearchRequest({
+            includeGenre: ['2'],
+        }, 1, 10);
         const section1 = createHomeSection({
             id: this.sectionKeys.shounen,
-            title: "UPDATED SHOUNENS",
+            title: 'UPDATED SHOUNEN TITLES',
             view_more: this.constructGetViewMoreRequest(this.sectionKeys.shounen, 1),
         });
         const section3 = createHomeSection({
             id: this.sectionKeys.recentlyUpdated,
-            title: "RECENTLY UPDATED TITLES",
+            title: 'UPDATED ACTION TITLES',
             view_more: this.constructGetViewMoreRequest(this.sectionKeys.recentlyUpdated, 1),
         });
         return [
@@ -713,7 +711,7 @@ class MangaDex extends paperback_extensions_common_1.Source {
         ];
     }
     getHomePageSections(data, sections) {
-        return sections.map((section) => {
+        return sections.map(section => {
             switch (section.id) {
                 case this.sectionKeys.shounen:
                     section.items = this.parseRecentlyUpdatedMangaSectionTiles(data);
@@ -729,26 +727,21 @@ class MangaDex extends paperback_extensions_common_1.Source {
         switch (key) {
             case this.sectionKeys.shounen:
                 return this.constructSearchRequest({
-                    includeDemographic: ["1"],
+                    includeDemographic: ['1'],
                 }, page);
             case this.sectionKeys.recentlyUpdated:
-                return createRequestObject({
-                    url: `${CACHE_DOMAIN}/updates?page=${page}`,
-                    method: "GET",
-                    metadata: {
-                        key,
-                        page,
-                    },
-                });
+                return this.constructSearchRequest({
+                    includeGenre: ['2'],
+                }, page);
         }
     }
     getViewMoreItems(data, key, metadata) {
         const updates = this.parseRecentlyUpdatedMangaSectionTiles(data);
         return createPagedResults({
             results: updates,
-            nextPage: updates.length > 0
-                ? this.constructGetViewMoreRequest(key, metadata.page + 1)
-                : undefined,
+            nextPage: updates.length > 0 ?
+                this.constructGetViewMoreRequest(key, metadata.page + 1) :
+                undefined,
         });
     }
     parseRecentlyUpdatedMangaSectionTiles(data) {
@@ -761,10 +754,10 @@ class MangaDex extends paperback_extensions_common_1.Source {
                 id: manga.id.toString(),
                 image: manga.image,
                 title: createIconText({
-                    text: (_a = manga.titles[0]) !== null && _a !== void 0 ? _a : "UNKNOWN",
+                    text: (_a = manga.titles[0]) !== null && _a !== void 0 ? _a : 'UNKNOWN',
                 }),
                 subtitleText: createIconText({
-                    icon: "clock.fill",
+                    icon: 'clock.fill',
                     text: this.timeDifference(new Date().getTime(), new Date(manga.lastUpdate).getTime()),
                 }),
             }));
@@ -772,19 +765,34 @@ class MangaDex extends paperback_extensions_common_1.Source {
         return updates;
     }
     constructSearchRequest(query, page, items = 50) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         return createRequestObject({
             url: CACHE_SEARCH + `?page=${page}&items=${items}`,
-            method: "POST",
+            method: 'POST',
+            // We cant just JSON.stringify the `SearchRequest` object
+            // so this is necessary
             data: JSON.stringify({
                 title: query.title,
+                includeDemographic: (_a = query.includeDemographic) === null || _a === void 0 ? void 0 : _a.map(x => parseInt(x)),
+                includeTheme: (_b = query.includeTheme) === null || _b === void 0 ? void 0 : _b.map(x => parseInt(x)),
+                includeFormat: (_c = query.includeFormat) === null || _c === void 0 ? void 0 : _c.map(x => parseInt(x)),
+                includeContent: (_d = query.includeContent) === null || _d === void 0 ? void 0 : _d.map(x => parseInt(x)),
+                includeGenre: (_e = query.includeGenre) === null || _e === void 0 ? void 0 : _e.map(x => parseInt(x)),
+                excludeDemographic: (_f = query.excludeDemographic) === null || _f === void 0 ? void 0 : _f.map(x => parseInt(x)),
+                excludeTheme: (_g = query.excludeTheme) === null || _g === void 0 ? void 0 : _g.map(x => parseInt(x)),
+                excludeFormat: (_h = query.excludeFormat) === null || _h === void 0 ? void 0 : _h.map(x => parseInt(x)),
+                excludeContent: (_j = query.excludeContent) === null || _j === void 0 ? void 0 : _j.map(x => parseInt(x)),
+                excludeGenre: (_k = query.excludeGenre) === null || _k === void 0 ? void 0 : _k.map(x => parseInt(x)),
+                includeOperator: query.includeOperator,
+                excludeOperator: query.excludeOperator,
+                author: query.author,
+                artist: query.artist,
+                status: query.status,
+                hStatus: query.hStatus,
                 bypassFilter: true,
             }),
             headers: {
-                "content-type": "application/json",
-            },
-            metadata: {
-                page: page,
-                query: query,
+                'content-type': 'application/json',
             },
         });
     }
@@ -800,15 +808,15 @@ class MangaDex extends paperback_extensions_common_1.Source {
                 id: mangaDetails.id.toString(),
                 image: mangaDetails.image,
                 title: createIconText({
-                    text: (_a = mangaDetails.titles[0]) !== null && _a !== void 0 ? _a : "UNKNOWN",
+                    text: (_a = mangaDetails.titles[0]) !== null && _a !== void 0 ? _a : 'UNKNOWN',
                 }),
             }));
         }
         return createPagedResults({
             results: mangas,
-            nextPage: mangas.length > 0
-                ? this.constructSearchRequest(metadata.query, metadata.page + 1)
-                : undefined,
+            nextPage: mangas.length > 0 ?
+                this.constructSearchRequest(metadata.query, metadata.page + 1) :
+                undefined,
         });
     }
     getMangaShareUrl(mangaId) {
@@ -822,21 +830,21 @@ class MangaDex extends paperback_extensions_common_1.Source {
         const msPerYear = msPerDay * 365;
         const elapsed = current - previous;
         if (elapsed < msPerMinute) {
-            return Math.round(elapsed / 1000) + " sec ago";
+            return Math.round(elapsed / 1000) + ' sec ago';
         }
         if (elapsed < msPerHour) {
-            return Math.round(elapsed / msPerMinute) + " min ago";
+            return Math.round(elapsed / msPerMinute) + ' min ago';
         }
         if (elapsed < msPerDay) {
-            return Math.round(elapsed / msPerHour) + " hrs ago";
+            return Math.round(elapsed / msPerHour) + ' hrs ago';
         }
         if (elapsed < msPerMonth) {
-            return Math.round(elapsed / msPerDay) + " days ago";
+            return Math.round(elapsed / msPerDay) + ' days ago';
         }
         if (elapsed < msPerYear) {
-            return Math.round(elapsed / msPerMonth) + " months ago";
+            return Math.round(elapsed / msPerMonth) + ' months ago';
         }
-        return Math.round(elapsed / msPerYear) + " years ago";
+        return Math.round(elapsed / msPerYear) + ' years ago';
     }
 }
 exports.MangaDex = MangaDex;
