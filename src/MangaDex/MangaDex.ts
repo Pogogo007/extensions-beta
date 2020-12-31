@@ -17,7 +17,7 @@ import {
 
 export class MangaDex extends Source {
   get version(): string {
-    return '2.0.73'
+    return '2.0.75'
   }
 
   get name(): string {
@@ -265,115 +265,186 @@ export class MangaDex extends Source {
     return createMangaUpdates(returnObject)
   }
 
+
   getHomePageSectionRequest(): HomeSectionRequest[] {
-    console.log(JSON.stringify(this))
-    const request1 = this.constructSearchRequest({
-      includeDemographic: ['1'],
-    }, 1, 10)
+    console.log(JSON.stringify(this));
+    let request1 = createRequestObject({
+      url: 'https://mangadex.org',
+      method: "GET"
+    });
+    let request2 = createRequestObject({
+      url: 'https://mangadex.org/updates',
+      method: 'GET'
+    });
 
-    const request2 = this.constructSearchRequest({
-      includeGenre: ['2'],
-    }, 1, 10)
-
-    const section2 = createHomeSection({
-      id: this.sectionKeys.shounen,
-      title: 'UPDATED SHOUNEN TITLES',
-      view_more: this.constructGetViewMoreRequest(this.sectionKeys.shounen, 1),
-    })
-
-    const section3 = createHomeSection({
-      id: this.sectionKeys.recentlyUpdated,
-      title: 'UPDATED ACTION TITLES',
-      view_more: this.constructGetViewMoreRequest(this.sectionKeys.recentlyUpdated, 1),
-    })
-
-    const section1 = createHomeSection({
-      id: this.sectionKeys.recentlyUpdated,
-      title: "RECENTLY UPDATED TITLES",
-      view_more: this.constructGetViewMoreRequest(
-        this.sectionKeys.recentlyUpdated,
-        1
-      ),
-    })
+    let section1 = createHomeSection({ id: 'featured_titles', title: 'FEATURED TITLES' });
+    let section2 = createHomeSection({ id: 'new_titles', title: 'NEW TITLES' });
+    let section3 = createHomeSection({
+      id: 'recently_updated',
+      title: 'RECENTLY UPDATED TITLES',
+      view_more: this.constructGetViewMoreRequest('recently_updated', 1)
+    });
 
     return [
       createHomeSectionRequest({
         request: request1,
-        sections: [section1],
+        sections: [section1, section2]
       }),
       createHomeSectionRequest({
         request: request2,
-        sections: [section3],
-      }),
-    ]
+        sections: [section3]
+      })
+    ];
   }
 
   getHomePageSections(data: any, sections: HomeSection[]): HomeSection[] {
+    console.log(JSON.stringify(this));
+
+    let $ = this.cheerio.load(data);
     return sections.map(section => {
       switch (section.id) {
-        case this.sectionKeys.shounen:
-          section.items = this.parseRecentlyUpdatedMangaSectionTiles(data)
-          break
-        case this.sectionKeys.recentlyUpdated:
-          section.items = this.parseRecentlyUpdatedMangaSectionTiles(data)
-          break
+        case 'featured_titles':
+          section.items = this.parseFeaturedMangaTiles($);
+          break;
+        case 'new_titles':
+          section.items = this.parseNewMangaSectionTiles($);
+          break;
+        case 'recently_updated':
+          section.items = this.parseRecentlyUpdatedMangaSectionTiles($);
+          break;
       }
 
-      return section
-    })
+      return section;
+    });
   }
 
   constructGetViewMoreRequest(key: string, page: number) {
-    switch (key) {
-      case this.sectionKeys.shounen:
-        return this.constructSearchRequest({
-          includeDemographic: ['1'],
-        }, page)
-
-      case this.sectionKeys.recentlyUpdated:
-        return this.constructSearchRequest({
-          includeGenre: ['2'],
-        }, page)
-    }
+    return createRequestObject({
+      url: 'https://mangadex.org/updates/' + page.toString(),
+      method: 'GET',
+      metadata: {
+        key, page
+      }
+    });
   }
 
   getViewMoreItems(data: string, key: string, metadata: any): PagedResults {
-    const updates = this.parseRecentlyUpdatedMangaSectionTiles(data)
+    let $ = this.cheerio.load(data);
+
+    let updates = this.parseRecentlyUpdatedMangaSectionTiles($);
 
     return createPagedResults({
       results: updates,
-      nextPage:
-        updates.length > 0 ?
-          this.constructGetViewMoreRequest(key, metadata.page + 1) :
-          undefined,
-    })
+      nextPage: updates.length > 0 ? this.constructGetViewMoreRequest(key, metadata.page + 1) : undefined
+    });
   }
 
-  parseRecentlyUpdatedMangaSectionTiles(data: any): MangaTile[] {
-    const updates: MangaTile[] = []
-    const result = JSON.parse(data).result
+  parseFeaturedMangaTiles($: CheerioSelector): MangaTile[] {
+    let featuredManga: MangaTile[] = [];
 
-    for (const manga of result) {
-      console.log(manga.lastUpdate)
-      updates.push(
-        createMangaTile({
-          id: manga.id.toString(),
-          image: manga.image,
-          title: createIconText({
-            text: manga.titles[0] ?? 'UNKNOWN',
-          }),
-          subtitleText: createIconText({
-            icon: 'clock.fill',
-            text: this.timeDifference(
-              new Date().getTime(),
-              new Date(manga.lastUpdate).getTime(),
-            ),
-          }),
-        }),
-      )
+    $("#hled_titles_owl_carousel .large_logo").each(function (i: any, elem: any) {
+      let title = $(elem);
+
+      let img = title.find("img").first();
+      let links = title.find("a");
+
+      let idStr: any = links.first().attr("href");
+      let id = idStr!!.match(/(\d+)(?=\/)/) ?? "-1";
+
+      let caption = title.find(".car-caption p:nth-child(2)");
+      let bookmarks = caption.find("span[title=Follows]").text();
+      let rating = caption.find("span[title=Rating]").text();
+
+      featuredManga.push(createMangaTile({
+        id: id[0],
+        image: img.attr("data-src") ?? "",
+        title: createIconText({ text: img.attr("title") ?? "" }),
+        primaryText: createIconText({ text: bookmarks, icon: 'bookmark.fill' }),
+        secondaryText: createIconText({ text: rating, icon: 'star.fill' })
+      }));
+    });
+
+    return featuredManga;
+  }
+
+  parseNewMangaSectionTiles($: CheerioSelector): MangaTile[] {
+    let newManga: MangaTile[] = [];
+
+    $("#new_titles_owl_carousel .large_logo").each(function (i: any, elem: any) {
+      let title = $(elem);
+
+      let img = title.find("img").first();
+      let links = title.find("a");
+
+      let idStr: any = links.first().attr("href");
+      let id = idStr.match(/(\d+)(?=\/)/);
+
+      let caption = title.find(".car-caption p:nth-child(2)");
+      let obj: any = { name: caption.find("a").text(), group: "", time: Date.parse(caption.find("span").attr("title") ?? " "), langCode: "" };
+      let updateTime: string = caption.find("span").text();
+      newManga.push(createMangaTile({
+        id: id[0],
+        image: img.attr("data-src") ?? " ",
+        title: createIconText({ text: img.attr("title") ?? " " }),
+        subtitleText: createIconText({ text: caption.find("a").text() }),
+        secondaryText: createIconText({ text: updateTime, icon: 'clock.fill' })
+      }));
+    });
+
+    return newManga;
+  }
+
+  parseRecentlyUpdatedMangaSectionTiles($: CheerioSelector): MangaTile[] {
+    let updates: MangaTile[] = [];
+    let elem = $('tr', 'tbody').toArray();
+    let i = 0;
+
+    while (i < elem.length) {
+      let hasImg: boolean = false;
+      let idStr: string = $('a.manga_title', elem[i]).attr('href') ?? '';
+      let id: string = (idStr.match(/(\d+)(?=\/)/) ?? '')[0] ?? '';
+      let title: string = $('a.manga_title', elem[i]).text() ?? '';
+      let image: string = (MD_DOMAIN + $('img', elem[i]).attr('src')) ?? '';
+
+      // in this case: badge will be number of updates
+      // that the manga has received within last week
+      let badge = 0;
+      let pIcon = 'eye.fill';
+      let sIcon = 'clock.fill';
+      let subTitle = '';
+      let pText = '';
+      let sText = '';
+
+      let first = true;
+      i++;
+      while (!hasImg && i < elem.length) {
+        // for the manga tile, we only care about the first/latest entry
+        if (first && !hasImg) {
+          subTitle = $('a', elem[i]).first().text();
+          pText = $('.text-center.text-info', elem[i]).text();
+          sText = $('time', elem[i]).text().replace('ago', '').trim();
+          first = false;
+        }
+        badge++;
+        i++;
+
+        hasImg = $(elem[i]).find('img').length > 0;
+      }
+
+      updates.push(createMangaTile({
+        id,
+        image,
+        title: createIconText({ text: title }),
+        subtitleText: createIconText({ text: subTitle }),
+        primaryText: createIconText({ text: pText, icon: pIcon }),
+        secondaryText: createIconText({ text: sText, icon: sIcon }),
+        badge
+      }));
     }
-    return updates
+
+    return updates;
   }
+
 
   constructSearchRequest(query: SearchRequest, page: number, items = 50) {
     return createRequestObject({
