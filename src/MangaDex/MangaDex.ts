@@ -17,7 +17,7 @@ import {
 
 export class MangaDex extends Source {
   get version(): string {
-    return '2.0.71'
+    return '2.0.72'
   }
 
   get name(): string {
