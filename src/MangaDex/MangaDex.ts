@@ -17,7 +17,7 @@ import {
 
 export class MangaDex extends Source {
   get version(): string {
-    return '2.0.72'
+    return '2.0.73'
   }
 
   get name(): string {
@@ -275,7 +275,7 @@ export class MangaDex extends Source {
       includeGenre: ['2'],
     }, 1, 10)
 
-    const section1 = createHomeSection({
+    const section2 = createHomeSection({
       id: this.sectionKeys.shounen,
       title: 'UPDATED SHOUNEN TITLES',
       view_more: this.constructGetViewMoreRequest(this.sectionKeys.shounen, 1),
@@ -285,6 +285,15 @@ export class MangaDex extends Source {
       id: this.sectionKeys.recentlyUpdated,
       title: 'UPDATED ACTION TITLES',
       view_more: this.constructGetViewMoreRequest(this.sectionKeys.recentlyUpdated, 1),
+    })
+
+    const section1 = createHomeSection({
+      id: this.sectionKeys.recentlyUpdated,
+      title: "RECENTLY UPDATED TITLES",
+      view_more: this.constructGetViewMoreRequest(
+        this.sectionKeys.recentlyUpdated,
+        1
+      ),
     })
 
     return [
